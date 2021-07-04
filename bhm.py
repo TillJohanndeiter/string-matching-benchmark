@@ -69,7 +69,7 @@ class BoyerMooreAlgorithm(StringMatchingAlgorithm):
             # Match found
             if match_idx < 0:
                 start_idxs.append(start_idx)
-                # Move start_idx to next character aligns with last occurence in pattern  or increase by one to end outer for loop
+                # Move text_start_idx to next character aligns with last occurence in pattern  or increase by one to end outer for loop
                 start_idx += (max(pattern_len - bad_char[
                     current_char], shift[0]) if start_idx + pattern_len < text_len else 1)
             # Not a match

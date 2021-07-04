@@ -1,6 +1,4 @@
 import threading
-import time
-from math import pow, factorial as fac
 
 from threading import Thread
 
