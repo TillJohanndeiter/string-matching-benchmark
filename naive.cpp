@@ -14,24 +14,29 @@ const string SPLIT_PATTERN_TEXT = "SPLIT_PATTERN_TEXT";
 
 
 vector<int> search(char* txt, char* pat) {
-
     vector<int> startIndices; 
 
     int m = strlen(pat);
     int n = strlen(txt);
- 
+
+    #pragma omp parallel for
     for (int i = 0; i <= n - m; i++) {
         int j;
         for (j = 0; j < m; j++) {
-            if (txt[i + j] != pat[j])
+            if (txt[i + j] != pat[j]) {
                 break;
+            }
         }
             
  
         if (j == m) {
-            startIndices.push_back(i);
-        }
 
+            #pragma omp critical
+            {
+                startIndices.push_back(i);            
+            }
+
+        }
     }
 
     return startIndices;
@@ -81,7 +86,7 @@ int main(int argc, char *argv[]) {
     
     }
 
-    for (int i = 0; i < n; i+=2) {
+    for (int i = 0; i < dataset.size(); i+=2) {
           auto t1 = high_resolution_clock::now();
           vector<int> startIndices = search(dataset[i], dataset[i+1]);
           auto t2 = high_resolution_clock::now();

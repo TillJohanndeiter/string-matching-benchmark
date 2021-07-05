@@ -3,10 +3,10 @@ import re
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument('textLength', type=int, default=1000)
-parser.add_argument('patternLength', type=int, default=10)
-parser.add_argument('patternInText', type=bool, default=True)
-parser.add_argument('numSamples', type=int, default=100)
+parser.add_argument('textLength', type=int)
+parser.add_argument('patternLength', type=int)
+parser.add_argument('patternInText', type=str)
+parser.add_argument('numSamples', type=int)
 parser.parse_args()
 
 SPLIT_PATTERN_TEXT = 'SPLIT_PATTERN_TEXT'
@@ -37,7 +37,7 @@ if __name__ == '__main__':
         while len(text_to_pattern) < num_samples:
             text = getRandomQuote()
 
-            if pattern_in_text:
+            if pattern_in_text == 'True':
 
                 pattern_start_idx = random.randrange(start=0,
                                                      stop=len(bible_text) - pattern_length)
@@ -52,11 +52,10 @@ if __name__ == '__main__':
 
                 while patternNotFound:
                     other_text = getRandomQuote()
-                    words_of_text = other_text.split(' ')
                     pattern_start_idx = random.randrange(start=0,
-                                                         stop=len(words_of_text) - pattern_length)
+                                                         stop=len(bible_text) - pattern_length)
                     pattern = ' '.join(
-                        words_of_text[pattern_start_idx: pattern_start_idx + pattern_length])
+                        bible_text[pattern_start_idx: pattern_start_idx + pattern_length])
 
                     if pattern not in text:
                         patternNotFound = False
