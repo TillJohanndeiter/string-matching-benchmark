@@ -1,3 +1,5 @@
+// Source: https://www.geeksforgeeks.org/boyer-moore-algorithm-for-pattern-searching/ and https://www.geeksforgeeks.org/boyer-moore-algorithm-good-suffix-heuristic/
+
 #include <iostream>
 #include <string>
 #include <sstream>

@@ -1,3 +1,5 @@
+// Source: https://www.geeksforgeeks.org/kmp-algorithm-for-pattern-searching/
+
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -19,9 +21,7 @@ const string SPLIT_PATTERN_TEXT = "SPLIT_PATTERN_TEXT";
 
 
 // preprocessing for strong good suffix rule
-void preprocess_strong_suffix(int *shift, int *bpos,
-                                char *pat, int m)
-{
+void preprocess_strong_suffix(int *shift, int *bpos, char *pat, int m) {
     // m is the length of pattern 
     int i = m, j = m+1;
     bpos[i] = j;
@@ -52,9 +52,7 @@ void preprocess_strong_suffix(int *shift, int *bpos,
 }
   
 //Preprocessing for case 2
-void preprocess_case2(int *shift, int *bpos,
-                      char *pat, int m)
-{
+void preprocess_case2(int *shift, int *bpos, char *pat, int m) {
     int i, j;
     j = bpos[0];
     for(i = 0; i <= m; i++)
@@ -74,8 +72,7 @@ void preprocess_case2(int *shift, int *bpos,
 
 
 
-void badCharHeuristic(char* str, int size,
-                        int badchar[NO_OF_CHARS]){
+void badCharHeuristic(char* str, int size, int badchar[NO_OF_CHARS]){
  
     // Initialize all occurrences as -1
     for (int i = 0; i < NO_OF_CHARS; i++)
@@ -97,17 +94,16 @@ vector<int> search(char* txt, char* pat) {
 
     int m = strlen(pat);
     int n = strlen(txt);
- 
+
     int badchar[NO_OF_CHARS];
- 
+    int bpos[m+1], shift[m+1];
+        
+
     /* Fill the bad character array by calling
     the preprocessing function badCharHeuristic()
     for given pattern */
     badCharHeuristic(pat, m, badchar);
 
-
-    int bpos[m+1], shift[m+1];
-    
 
     for(int i = 0; i < m+1; i++) {
         shift[i] = 0;
@@ -117,14 +113,15 @@ vector<int> search(char* txt, char* pat) {
     preprocess_strong_suffix(shift, bpos, pat, m);
     preprocess_case2(shift, bpos, pat, m);
 
-
     #pragma omp parallel
     {
 
         int nthreads = omp_get_num_threads();
         int id = omp_get_thread_num();
         int sstart = id * ( (n - m) / nthreads);
+        //cout << sstart << endl;
         int send = min((id + 1) * ( (n - m) / nthreads), n - m);
+
         int j = 0; // index for pat[]
 
 
@@ -144,19 +141,19 @@ vector<int> search(char* txt, char* pat) {
             shift, then index j will become -1 after
             the above loop */
             if (j < 0) {
-                startIndices.push_back(s);
-    
+                  #pragma omp critical
+                  {  
+                      startIndices.push_back(s);
+                  }
                 /* Shift the pattern so that the next
                 character in text aligns with the last
                 occurrence of it in pattern.
                 The condition s+m < n is necessary for
                 the case when pattern occurs at the end
                 of text */
-                s += max ( (s + m < n)? m - badchar[txt[s + m]] : 1, shift[0]);
+                s += max ((s + m < n)? m - badchar[txt[s + m]] : 1, shift[0]);
     
-            }
-    
-            else
+            } else
                 /* Shift the pattern so that the bad character
                 in text aligns with the last occurrence of
                 it in pattern. The max function is used to
@@ -165,7 +162,7 @@ vector<int> search(char* txt, char* pat) {
                 occurrence of bad character in pattern
                 is on the right side of the current
                 character. */
-                s += max(max(1, j - badchar[txt[s + j]]), shift[j + 1]);
+                s += max(j - badchar[txt[s + j]], shift[j + 1]);
         }
 
 

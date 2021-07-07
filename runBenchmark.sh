@@ -1,5 +1,5 @@
  
-for approach in naive; do
+for approach in naive naive03 naive03Parallel kmp kmpParallel bm bmParallel ; do
     for dataset in *.bd; do
         for numRun in 1 2 3; do
             temp=$(echo $dataset| cut -d'.' -f 1)

@@ -1,3 +1,5 @@
+// Source: https://www.geeksforgeeks.org/boyer-moore-algorithm-for-pattern-searching/ and https://www.geeksforgeeks.org/boyer-moore-algorithm-good-suffix-heuristic/
+
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -134,11 +136,8 @@ vector<int> search(char* txt, char* pat) {
         shift, then index j will become -1 after
         the above loop */
         if (j < 0) {
-
-            #pragma omp critical
-            {   
-                startIndices.push_back(s);
-            }
+            
+            startIndices.push_back(s);
             
             /* Shift the pattern so that the next
             character in text aligns with the last
@@ -159,7 +158,7 @@ vector<int> search(char* txt, char* pat) {
             occurrence of bad character in pattern
             is on the right side of the current
             character. */
-            s += max(max(1, j - badchar[txt[s + j]]), shift[j + 1]);
+            s += max(j - badchar[txt[s + j]], shift[j + 1]);
     }
 
     return startIndices;
